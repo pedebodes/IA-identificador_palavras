@@ -1,0 +1,74 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script src="//res.cloudinary.com/hhwvbypoo/raw/upload/v1502205241/static/js/sketch.js" type="text/javascript"></script>
+    <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" rel="stylesheet">
+    <script src="//res.cloudinary.com/hhwvbypoo/raw/upload/v1502204511/static/js/canvas2image.js" type="text/javascript"></script>
+    <style>
+      body {
+        margin: 10px;
+        padding: 10px;
+      }
+    </style>
+    <script type="text/javascript">
+      function clearCanvas(canvas) {
+        var context = canvas.getContext('2d');
+        context.clearRect(0, 0, canvas.width, canvas.height);
+        $('#simple_sketch').sketch('actions',[]);
+      }
+
+      $(function() {
+        $('#simple_sketch').sketch();
+        $('#simple_sketch').sketch('size', 20);
+        $('#submit').click(function(){
+          var canvas = $('#simple_sketch')[0];
+          var data = canvas.toDataURL();
+          event.preventDefault();
+          $.post("/predict/", {'canvas': data}, function(resp){
+            $("#response").html(resp);
+            clearCanvas(canvas);
+          });
+        });
+      });
+    </script>
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-99397605-1', 'auto');
+      ga('send', 'pageview');
+    </script>
+  </head>
+  <body>
+    <div class="row text-center">
+      <h1>MNIST</h1>
+      <p>{{ _('Desenhe um número de 0 a 9 no quadro a esquerda e veja se nossa Inteligência Artificial consegue acertar o número desenhado!') }}</p>
+    </div>
+    <br>
+    <div class="row text-center">
+      <div class="col-xs-offset-1 col-xs-5">
+        <form method="post" action="" enctype="multipart/form-data">
+          <canvas id="simple_sketch" name="canvas" width="300" height="300" style="border: 1px solid #ccc"></canvas>
+          <input name="canvas" id="hidden" placeholder="question one" type="hidden" accept="image/*"/>
+          <div class="tools">
+            <!--input type="submit" class="button" id="send" value="Enviar"/-->
+            <button id="submit">{{ _('Enviar') }}</button>
+          </div>
+        </form>
+        <image id="theimage" ></image>
+      </div>
+      <h1>{{ _('Você desenhou:') }}</h1><br>
+      <h1 id="response">...</h1>
+    </div>
+    <br>
+    <div class="row text-center">
+      <p>{{ _('Quer saber como isto funciona? Veja o ') }}<a href="https://github.com/rafaelnovello/mnist-demo" target="_blank"> {{ _('repositório do projeto') }}</a></p>
+      <p>{{ _('Baixe o dataset validado desta demo ') }}
+        <a href="http://res.cloudinary.com/hhwvbypoo/raw/upload/v1495750591/mnist/mnist-demo-validated-data.zip" target="_blank">{{ _('aqui!') }}</a>. 
+        {{ _('Mais informações no README do dataset.') }}</p>
+    </div>
+  </body>
+</html>
